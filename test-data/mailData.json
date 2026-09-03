@@ -1,0 +1,17 @@
+{
+    "validMail": {
+        "subject": "Playwright Automation Test",
+        "body": "This email was sent as part of the Proton Mail automation assessment."
+    },
+
+    "ccBccMail": {
+        "subject": "Playwright CC BCC Test",
+        "body": "Testing CC and BCC recipient handling."
+    },
+
+    "invalidRecipient": {
+        "recipient": "invalid-email",
+        "subject": "Invalid Recipient Test",
+        "body": "This message should not be sent."
+    }
+}
