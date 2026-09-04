@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { InboxPage } from '../pages/InboxPage.js';
 
+test.describe.configure({ mode: 'serial' });
 test.describe('Inbox and Message Actions', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -13,8 +14,8 @@ test.describe('Inbox and Message Actions', () => {
     }) => {
 
         const inboxPage = new InboxPage(page);
-
-        const subject = process.env.TEST_MESSAGE_SUBJECT;
+        const subject = await inboxPage.getFirstMessageSubject();
+        // const subject = process.env.TEST_MESSAGE_SUBJECT;
 
         await inboxPage.openMessage(subject);
 
@@ -28,7 +29,9 @@ test.describe('Inbox and Message Actions', () => {
 
         const inboxPage = new InboxPage(page);
 
-        const subject = process.env.TEST_MESSAGE_SUBJECT;
+        const subject = await inboxPage.getFirstMessageSubject();
+        // const subject = process.env.TEST_MESSAGE_SUBJECT;
+        await inboxPage.expectMessageExists(subject);
 
         await inboxPage.starMessage(subject);
 
@@ -46,8 +49,9 @@ test.describe('Inbox and Message Actions', () => {
 
         const inboxPage = new InboxPage(page);
 
-        const subject = process.env.TEST_MESSAGE_SUBJECT;
-
+        const subject = await inboxPage.getFirstMessageSubject();
+        console.log(`Subject of the first message: ${subject}`);
+        // const subject = process.env.TEST_MESSAGE_SUBJECT;
         await inboxPage.archiveMessage(subject);
 
         await inboxPage.expectMessageNotInInbox(subject);
@@ -60,7 +64,8 @@ test.describe('Inbox and Message Actions', () => {
 
         const inboxPage = new InboxPage(page);
 
-        const subject = process.env.TEST_MESSAGE_SUBJECT;
+        const subject = await inboxPage.getFirstMessageSubject();
+        // const subject = process.env.TEST_MESSAGE_SUBJECT;
 
         await inboxPage.deleteMessage(subject);
 

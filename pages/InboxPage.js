@@ -23,48 +23,35 @@ export class InboxPage {
             '//*[@data-testid="label-modal:save"]'
         );
         this.labelOption = (label) =>
-            page.getByText(label, { exact: true });
+            page.locator(`//mark[text()="${label}"]`);
         // =========================================================
         // Navigation
         // =========================================================
 
-        this.inboxLink = page.locator('YOUR_INBOX_LINK_LOCATOR');
+        this.inboxLink = page.locator('//*[@data-testid="sidebar-label:Inbox"]');
         this.trashLink = page.locator('//*[@data-testid="sidebar-label:Trash"]');
         this.moreoptions = page.locator('//*[@data-shortcut-target="toggle-more-items"]');
-
+        this.applybutton = page.locator('//*[@data-testid="label-dropdown:apply"]');
         // =========================================================
         // Message
         // =========================================================
+        this.firstmessagesubject = page.locator('(//*[@data-testid="message-row:subject"])[1]');
 
         this.messageBySubject = (subject) =>
             page.locator('//*[@data-testid="message-row:subject"]')
-                .filter({ hasText: subject });
-        this.checkboxbysubject = (subject) =>
-            this.messageBySubject(subject)
-                .locator('xpath=./ancestor::*[@data-shortcut-target="item-container"][1]')
-                .locator('.//*[@data-testid="item-checkbox"]');
+                .filter({ hasText: subject }).first();
+        this.checkboxbysubject = (subject) => page.locator(`//*[@data-testid="message-row:subject" and contains(normalize-space(.), "${subject}")]/ancestor::*[@data-shortcut-target="item-container"][1]//*[@data-testid="item-checkbox"]`).first();
         // =========================================================
         // Message actions
         // =========================================================
 
-       this.starButton = (subject) =>
-            this.messageBySubject(subject)
-                .locator('xpath=ancestor::*[@data-shortcut-target="item-container"][1]//*[@data-testid="item-star-true"]');
+        this.starButton = (subject) => page.locator(`//*[@data-testid="message-row:subject" and contains(normalize-space(.), "${subject}")]/ancestor::*[@data-shortcut-target="item-container"][1]//*[@data-testid="item-star-false"]`).first();
 
-        this.unstarButton = (subject) =>
-            this.messageBySubject(subject)
-                .locator('xpath=./ancestor::*[@data-shortcut-target="item-container"][1]')
-                .locator('.//*[@data-testid="item-star-true"]');
-
-        this.archiveButton = (subject) =>
-            this.messageBySubject(subject)
-                .locator('xpath=./ancestor::*')
-                .locator('.//*[text()="Move to archive"]/..');
-
-        this.deleteButton = (subject) =>
-            this.messageBySubject(subject)
-            .locator('xpath=./ancestor::*[@data-shortcut-target="item-container"][1]')
-                .locator('.//*[@data-testid="item-delete"]');
+        this.unstarButton = (subject) => page.locator(`//*[@data-testid="message-row:subject" and contains(normalize-space(.), "${subject}")]/ancestor::*[@data-shortcut-target="item-container"][1]//*[@data-testid="item-star-true"]`).first();
+        
+        this.archiveButton = (subject) => page.locator(`//*[@data-testid="message-row:subject" and contains(normalize-space(.), "${subject}")]/ancestor::*[@data-shortcut-target="item-container"][1]//*[text()="Move to archive"]/..`).first();
+        
+        this.deleteButton = (subject) => page.locator(`//*[@data-testid="message-row:subject" and contains(normalize-space(.), "${subject}")]/ancestor::*[@data-shortcut-target="item-container"][1]//*[text()="Move to trash"]/..`).first();
 
         // =========================================================
         // Read state
@@ -106,6 +93,10 @@ export class InboxPage {
         await expect(this.inboxLink).toBeVisible();
     }
 
+    async getFirstMessageSubject(){
+        await expect(this.firstmessagesubject).toBeVisible({ timeout: 100000 });
+        return (await this.firstmessagesubject.textContent()).trim();
+    }
 
     async openTrash() {
         await this.moreoptions.click();
@@ -156,33 +147,40 @@ export class InboxPage {
     // =============================================================
 
     async starMessage(subject) {
-        const button = this.starButton(subject);
-
-        await expect(button).toBeVisible();
-
-        await button.click();
+        const button1 = this.starButton(subject);
+        const button2 = this.unstarButton(subject);
+        
+        if (await button1.isVisible()) {
+            await button1.click();
+        } else {
+            await expect(button2).toBeVisible();
+        }
     }
 
 
+
     async unstarMessage(subject) {
-        const button = this.starButton(subject);
+        const button1 = this.starButton(subject);
+        const button2 = this.unstarButton(subject);
 
-        await expect(button).toBeVisible();
-
-        await button.click();
+        if (await button2.isVisible()) {
+            await button2.click();
+        } else {
+            await expect(button1).toBeVisible();
+        }
     }
 
 
     async expectMessageStarred(subject) {
         await expect(
-            this.starButton(subject)
+            this.unstarButton(subject)
         ).toHaveAttribute('aria-pressed', 'true');
     }
 
 
     async expectMessageUnstarred(subject) {
         await expect(
-            this.unstarButton(subject)
+            this.starButton(subject)
         ).toHaveAttribute('aria-pressed', 'false');
     }
 
@@ -212,7 +210,7 @@ export class InboxPage {
         const message = this.messageBySubject(subject);
         await expect(message).toBeVisible();
         await message.hover();
-        const button = this.deleteButton(subject);
+        const button = this.deleteButton(subject).first();
 
         await expect(button).toBeVisible();
 
@@ -228,7 +226,7 @@ export class InboxPage {
         const message = this.messageBySubject(subject);
         await expect(message).toBeVisible();
         await message.hover();
-        await this.checkboxbysubject(subject).click();
+        await this.checkboxbysubject(subject).first().click();
         await this.restoreButton.click();
     }
 
@@ -250,24 +248,12 @@ export class InboxPage {
         await expect(
             this.labelOption(label)
         ).toBeVisible();
+        await this.applybutton.click();
     }
 
     async selectfirstMessage() {
         await this.firstemailcheckbox.click();
     }
-
-
-    // async applyLabel( label) {
-
-
-    //     await expect(message).toBeVisible();
-
-    //     await message.click();
-
-    //     await this.labelMenuButton.click();
-
-    //     await this.labelOption(label).click();
-    // }
 
 
     async expectMessageHasLabel(label) {

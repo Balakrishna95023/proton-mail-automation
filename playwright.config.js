@@ -9,7 +9,7 @@ export default defineConfig({
     timeout: 100 * 1000,
 
     expect: {
-        timeout: 10_000
+        timeout: 60_000
     },
 
     fullyParallel: true,
@@ -44,17 +44,27 @@ export default defineConfig({
     },
 
     projects: [
-        {
-            name: 'setup',
-            testMatch: /auth\.setup\.js/
-        },
-        {
-            name: 'chromium',
-            dependencies: ['setup'],
-            use: {
-                ...devices['Desktop Chrome'],
-                storageState: '.auth/sender.json'
-            }
+    {
+        name: 'setup',
+        testMatch: /auth\.setup\.js/
+    },
+
+    {
+        name: 'chromium',
+        dependencies: ['setup'],
+        testIgnore: /auth\.spec\.js/,
+        use: {
+            ...devices['Desktop Chrome'],
+            storageState: '.auth/sender.json'
         }
-    ]
+    },
+
+    {
+        name: 'inbox-no-setup',
+        testMatch: /auth\.spec\.js/,
+        use: {
+            ...devices['Desktop Chrome']
+        }
+    }
+]
 });

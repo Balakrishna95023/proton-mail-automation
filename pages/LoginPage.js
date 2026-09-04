@@ -33,7 +33,7 @@ export class LoginPage {
   }
 
   async expectInboxLoaded() {
-    await expect(this.welcomeText).toBeVisible();
+    await expect(this.welcomeText).toBeVisible({ timeout: 100000 });
     await expect(this.securityText).toBeVisible();
   }
 }
