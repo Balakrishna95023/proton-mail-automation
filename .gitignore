@@ -1,7 +1,9 @@
-.auth/
-test-results/
-playwright-report/
-reports/
 screenshots/
+.env
+.env.*
 .auth/
+node_modules/
+playwright-report/
+test-results/
+reports/
 *.log
