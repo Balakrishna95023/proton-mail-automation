@@ -33,22 +33,6 @@ export class SearchPage {
         this.senderInput = page.locator(
             '//*[@id="from"]'
         );
-
-        this.recipientInput = page.locator(
-            'YOUR_RECIPIENT_INPUT_LOCATOR'
-        );
-
-        this.keywordInput = page.locator(
-            'YOUR_KEYWORD_INPUT_LOCATOR'
-        );
-
-        this.advancedSearchSubmit = page.locator(
-            'YOUR_ADVANCED_SEARCH_SUBMIT_LOCATOR'
-        );
-
-        this.clearSearchButton = page.locator(
-            'YOUR_CLEAR_SEARCH_LOCATOR'
-        );
     }
 
 

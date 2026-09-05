@@ -68,17 +68,6 @@ export class InboxPage {
         this.restoreButton = page.locator(
             '//*[@data-testid="toolbar:movetoinbox"]'
         );
-
-        // =========================================================
-        // Labels
-        // =========================================================
-
-        this.labelMenuButton = page.locator(
-            'YOUR_LABEL_MENU_LOCATOR'
-        );
-
-
-
         
     }
 
